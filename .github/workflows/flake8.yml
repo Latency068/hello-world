@@ -1,0 +1,36 @@
+name: Flake8 Linter
+
+# メインブランチへのプッシュや、プルリクエスト作成時に実行
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. コードのチェックアウト
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. Python環境のセットアップ
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' # プロジェクトのPythonバージョンに合わせてください
+
+    # 3. Flake8のインストール
+    - name: Install Flake8
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+
+    # 4. コードチェックの実行
+    - name: Run Flake8
+      run: |
+        # エラー（E9, F63, F7, F82）は即時停止、それ以外の警告（スタイル等）もすべてチェック
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --max-line-length=127 --statistics
